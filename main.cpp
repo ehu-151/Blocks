@@ -59,10 +59,10 @@ bool loadTexture(int index, const char* filename)
 
 	// テクスチャオブジェクトの作成
 	glBindTexture(GL_TEXTURE_2D, textureID[index]);
-	// テクスチャの割り当て 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kTextureWidth, kTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage[index]);
 	// テクスチャマップのデータ格納形式の指定
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	// テクスチャの割り当て 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kTextureWidth, kTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage[index]);
 	// テクスチャの繰り返し方法の指定 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -71,7 +71,7 @@ bool loadTexture(int index, const char* filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	// 色の調整（環境の設定）
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, textureID[index]);
 	return true;
 }
 
@@ -82,11 +82,11 @@ bool loadTexture(int index, const char* filename)
 void setupTextures()
 {
 	// テクスチャ画像を生成
-	glGenTextures(kNumTextures, textureID); //テクスチャオブジェクトの名前付け
+	glGenTextures(2, textureID); //テクスチャオブジェクトの名前付け
 
 	// TODO: 必要なテクスチャファイルをここでロード
 	// e.g.
-	//loadTexture(0, "color.raw");	//playerbox
+	loadTexture(0, "block.bmp");	//playerbox
 	loadTexture(1, "char.raw");
 }
 
@@ -166,7 +166,7 @@ struct PlayerBox
 		glTexCoord2f(1, 0);  glVertex2i(centerX + width_2, centerY + height_2);
 		glTexCoord2f(1, 1);  glVertex2i(centerX + width_2, centerY - height_2);
 		glEnd();
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, textureID[0]);
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_BLEND);
 	}
