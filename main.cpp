@@ -13,7 +13,7 @@
 // ゲーム画面サイズの設定
 //
 //! スクリーン幅
-const int kScreenWidth = 600;
+const int kScreenWidth = 300;
 //! スクリーン高さ
 const int kScreenHeight = 600;
 
@@ -114,212 +114,6 @@ uint64_t getTimestampUS()
 #endif
 }
 
-/**
-* @struct PlayerBox
-* @brief プレイヤーが操作するブロック
-*/
-struct PlayerBox
-{
-	//! ブロックの中心X座標
-	int centerX;
-	//! ブロックの中心Y座標
-	int centerY;
-	//! ブロックの横幅/2
-	int width_2;
-	//! ブロックの高さ/2
-	int height_2;
-	//! ブロック残機(ストック数)
-	int stock;
-
-	/**
-	* @fn PlayerBox::PlayerBox()
-	* @brief デフォルトコンストラクタ
-	*/
-	PlayerBox()
-	{
-		width_2 = 50;
-		height_2 = 10;
-		centerX = 50;
-		centerY = 50;
-		stock = 3;
-	}
-	/**
-	* @fn void PlayerBox::init()
-	* @brief 初期化メンバ関数
-	*/
-	void init()
-	{
-	}
-	/**
-	* @fn void PlayerBox::draw()
-	* @brief 描画メンバ関数
-	*/
-	void draw()
-	{
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, textureID[0]);
-		glEnable(GL_BLEND);
-		glEnable(GL_TEXTURE_2D);
-		glBegin(GL_POLYGON);
-		glTexCoord2f(0, 1);  glVertex2i(centerX - width_2, centerY - height_2);
-		glTexCoord2f(0, 0);  glVertex2i(centerX - width_2, centerY + height_2);
-		glTexCoord2f(1, 0);  glVertex2i(centerX + width_2, centerY + height_2);
-		glTexCoord2f(1, 1);  glVertex2i(centerX + width_2, centerY - height_2);
-		glEnd();
-		glBindTexture(GL_TEXTURE_2D, textureID[0]);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
-	}
-	/**
-	* @fn void PlayerBox::update(double dt)
-	* @brief 状態更新メンバ関数
-	* @param [in] dt 時間差分（秒）
-	*/
-	void update(double dt)
-	{
-		
-	}
-};
-
-/**
-* @struct Block
-* @brief ブロック
-*/
-struct Block
-{
-	//! ブロック中心X座標
-	int centerX;
-	//! ブロック中心Y座標
-	int centerY;
-	//! ブロック横幅/2
-	int width_2;
-	//! ブロック高さ/2
-	int height_2;
-	//! 可視性
-	double visibility;
-
-	/**
-	* @fn Block::Block()
-	* @brief デフォルトコンストラクタ
-	*/
-	Block()
-	{
-		visibility = 1.0;
-		width_2 = 50;
-		height_2 = 50;
-		centerX = 50;
-		centerY = 50;
-	}
-	/**
-	* @fn void Block::init()
-	* @brief 初期化メンバ関数
-	*/
-	void init()
-	{
-	}
-	/**
-	* @fn void Block::draw()
-	* @brief 描画メンバ関数
-	*/
-	void draw()
-	{
-		if (visibility <= 0)
-		{
-			return;
-		}
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-		glColor4d(1.0, 1.0, 1.0, visibility);
-		glBegin(GL_POLYGON);
-		glVertex2i(centerX - width_2, centerY - height_2);
-		glVertex2i(centerX - width_2, centerY + height_2);
-		glVertex2i(centerX + width_2, centerY + height_2);
-		glVertex2i(centerX + width_2, centerY - height_2);
-		glEnd();
-		glDisable(GL_BLEND);
-	}
-	/**
-	* @fn void Block::update(double dt)
-	* @brief 状態更新メンバ関数
-	* @param [in] dt 時間差分（秒）
-	*/
-	void update(double dt)
-	{
-		if (visibility > 0 && visibility < 1.0)
-		{
-			visibility -= dt * 2.0;
-		}
-	}
-};
-
-/**
-* @struct Ball
-* @brief ボールクラス
-*/
-struct Ball
-{
-	//! ボール中心X座標
-	double centerX;
-	//! ボール中心Y座標
-	double centerY;
-	//! ボール進行X方向(-1 or 1)
-	double dirX;
-	//! ボール進行Y方向(-1 or 1)
-	double dirY;
-	//! ボール半径
-	double radius;
-	//! ボール移動速度
-	double speed;
-	/**
-	* @fn Ball::Ball()
-	* @brief デフォルトコンストラクタ
-	*/
-	Ball()
-	{
-		centerX = 0;
-		centerY = 100;
-		dirX = 1.0;
-		dirY = 1.0;
-		radius = 10.0;
-		speed = 200;
-	}
-	/**
-	* @fn void Ball::init()
-	* @brief 初期化メンバ関数
-	*/
-	void init()
-	{
-		centerX = 0;
-		centerY = 100;
-		dirX = 1.0;
-		dirY = 1.0;
-		radius = 10.0;
-		speed = 200;
-	}
-	/**
-	* @fn void Ball:draw()
-	* @brief 描画メンバ関数
-	*/
-	void draw()
-	{
-		glBegin(GL_POLYGON);
-		glVertex2d(centerX - radius, centerY - radius);
-		glVertex2d(centerX - radius, centerY + radius);
-		glVertex2d(centerX + radius, centerY + radius);
-		glVertex2d(centerX + radius, centerY - radius);
-		glEnd();
-	}
-	/**
-	* @fn void Ball::update(double dt)
-	* @brief 状態更新メンバ関数
-	* @param [in] dt 時間差分（秒）
-	*/
-	void update(double dt)
-	{
-		centerX += dt * speed * dirX;
-		centerY += dt * speed * dirY;
-	}
-};
 
 /**
 * @struct KeyboardState
@@ -379,14 +173,6 @@ struct KeyboardState
 	}
 };
 
-//! プレイヤーブロックインスタンス
-PlayerBox player;
-//! ボールインスタンス
-Ball ball;
-//! ブロックの総数
-const int kNumBlocks = 25;
-//! ブロックインスタンス
-Block blocks[kNumBlocks];
 //! キーボードステートインスタンス
 KeyboardState keyboardState;
 
@@ -396,19 +182,7 @@ KeyboardState keyboardState;
 */
 void initializeGame()
 {
-	for (int h = 0; h < 5; ++h)
-	{
-		for (int w = 0; w < 5; ++w)
-		{
-			blocks[h * 5 + w].centerX = w * 100 + 100;
-			blocks[h * 5 + w].centerY = h * 40 + 350;
-			blocks[h * 5 + w].width_2 = 45;
-			blocks[h * 5 + w].height_2 = 18;
-			blocks[h * 5 + w].init();
-		}
-	}
-	player.init();
-	ball.init();
+	//initする
 }
 
 /**
@@ -419,14 +193,8 @@ void initializeGame()
 */
 bool isGameCleared()
 {
-	for (int i = 0; i < kNumBlocks; ++i)
-	{
-		if (blocks[i].visibility >= 1.0)
-		{
-			return false;
-		}
-	}
-	return true;
+	//クリア条件
+	return false;
 }
 
 /**
@@ -438,146 +206,13 @@ bool isGameCleared()
 
 bool isMiss()
 {
-	return ball.centerY < ball.radius;
+	return false;
 }
 bool isGameOvered()
 {
-	return player.stock == 0;
-}
-
-/**
-* @fn bool checkWall(Ball& ball)
-* @brief 壁との衝突判定
-* @param [in,out] ball ボール
-* @retval true 衝突あり
-* @retval false 衝突なし
-*/
-bool checkWall(Ball& ball)
-{
-	if (ball.centerX + ball.radius > kScreenWidth)
-	{
-		ball.centerX = kScreenWidth - ball.radius;
-		ball.dirX = -1;
-		return true;
-	}
-	if (ball.centerX - ball.radius < 0)
-	{
-		ball.centerX = ball.radius;
-		ball.dirX = +1;
-		return true;
-	}
-	if (ball.centerY + ball.radius > kScreenHeight)
-	{
-		ball.centerY = kScreenHeight - ball.radius;
-		ball.dirY = -1;
-		return true;
-	}
-	if (ball.centerY - ball.radius < 0)
-	{
-		ball.centerY = ball.radius;
-		ball.dirY = +1;
-		return true;
-	}
 	return false;
 }
-
-/**
-* @fn bool checkPlayer(Ball& ball, PlayerBox player)
-* @brief プレイヤーブロックとの衝突判定
-* @param [in,out] ball ボール
-* @param [in] player プレイヤーブロック
-* @retval true 衝突あり
-* @retval false 衝突なし
-*/
-bool checkPlayer(Ball& ball, PlayerBox player)
-{
-	double xp = +(ball.centerX + ball.radius) - (player.centerX - player.width_2);
-	double xn = -(ball.centerX - ball.radius) + (player.centerX + player.width_2);
-	double yp = +(ball.centerY + ball.radius) - (player.centerY - player.height_2);
-	double yn = -(ball.centerY - ball.radius) + (player.centerY + player.height_2);
-	if (xp < 0 || xn < 0 || yp < 0 || yn <= 0)
-	{
-		return false;
-	}
-	if (ball.dirX > 0 && xp < xn && xp < yp && xp < yn)
-	{
-		ball.centerX = player.centerX - player.width_2 - ball.radius;
-		ball.dirX = -1;
-		return true;
-	}
-	else if (ball.dirX < 0 && xn < yp && xn < yn)
-	{
-		ball.centerX = player.centerX + player.width_2 + ball.radius;
-		ball.dirX = +1;
-		return true;
-	}
-	else if (ball.dirY > 0 && yp < yn)
-	{
-		ball.centerY = player.centerY - player.height_2 - ball.radius;
-		ball.dirY = -1;
-		return true;
-	}
-	else if (ball.dirY < 0)
-	{
-		ball.centerY = player.centerY + player.height_2 + ball.radius;
-		ball.dirY = +1;
-		return true;
-	}
-	return false;
-}
-
-/**
-* @fn bool checkBlock(Ball& ball, Block& block)
-* @brief ブロックとの衝突判定
-* @param [in,out] ball ボール
-* @param [in,out] block 判定対象ブロック
-* @retval true 衝突あり
-* @retval false 衝突なし
-*/
-bool checkBlock(Ball& ball, Block& block)
-{
-	if (block.visibility < 1.0)
-	{
-		return false;
-	}
-	double xp = +(ball.centerX + ball.radius) - (block.centerX - block.width_2);
-	double xn = -(ball.centerX - ball.radius) + (block.centerX + block.width_2);
-	double yp = +(ball.centerY + ball.radius) - (block.centerY - block.height_2);
-	double yn = -(ball.centerY - ball.radius) + (block.centerY + block.height_2);
-	if (xp < 0 || xn < 0 || yp < 0 || yn <= 0)
-	{
-		return false;
-	}
-	if (ball.dirX > 0 && xp < xn && xp < yp && xp < yn)
-	{
-		ball.centerX = block.centerX - block.width_2 - ball.radius;
-		ball.dirX = -1;
-		block.visibility = 0.5;
-		return true;
-	}
-	else if (ball.dirX < 0 && xn < yp && xn < yn)
-	{
-		ball.centerX = block.centerX + block.width_2 + ball.radius;
-		ball.dirX = +1;
-		block.visibility = 0.5;
-		return true;
-	}
-	else if (ball.dirY > 0 && yp < yn)
-	{
-		ball.centerY = block.centerY - block.height_2 - ball.radius;
-		ball.dirY = -1;
-		block.visibility = 0.5;
-		return true;
-	}
-	else if (ball.dirY < 0)
-	{
-		ball.centerY = block.centerY + block.height_2 + ball.radius;
-		ball.dirY = +1;
-		block.visibility = 0.5;
-		return true;
-	}
-	return false;
-}
+// チェック処理
 
 /**
 * @fn void update(double dt)
@@ -586,66 +221,7 @@ bool checkBlock(Ball& ball, Block& block)
 */
 void update(double dt)
 {
-	ball.update(dt);
-	player.update(dt);
-	for (int i = 0; i < kNumBlocks; ++i)
-	{
-		blocks[i].update(dt);
-	}
-
-	//ミス処理
-	if (isMiss()){
-		ball.init();//ボールの初期化(位置、スピード)
-		player.stock -= 1;//ストックを減らす
-	}
-	//ゲームオバー処理
-	if (isGameOvered())
-	{
-		printf("Game Over...\n");
-		exit(0);
-	}
-
-	checkPlayer(ball, player);
-	for (int i = 0; i < kNumBlocks; ++i)
-	{
-		if (checkBlock(ball, blocks[i]))
-		{
-			break;
-		}
-	}
-	checkWall(ball);
-
-	if (isGameCleared())
-	{
-		printf("Game Clear!\n");
-		exit(0);
-	}
-
-	//ボールの位置更新
-	if (keyboardState.is_a)
-	{
-		player.centerX -= dt * 300;
-	}
-	if (keyboardState.is_d)
-	{
-		player.centerX += dt * 300;
-	}
-	if (keyboardState.is_w)
-	{
-		player.centerY += dt * 300;
-	}
-	if (keyboardState.is_s)
-	{
-		player.centerY -= dt * 300;
-	}
-	if (keyboardState.is_space)
-	{
-		ball.speed = 100;
-	}
-	else
-	{
-		ball.speed = 200;
-	}
+	//update処理
 }
 
 /**
@@ -656,12 +232,7 @@ void onDisplay()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	for (int i = 0; i < kNumBlocks; ++i)
-	{
-		blocks[i].draw();
-	}
-	ball.draw();
-	player.draw();
+	// TODO: .draw
 	glutSwapBuffers();
 	glFlush();
 }
@@ -677,7 +248,7 @@ void onKeyboard(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	// "a"が押された時
+		// "a"が押された時
 	case 'a':
 		keyboardState.is_a = true;
 		break;
@@ -702,12 +273,12 @@ void onKeyboard(unsigned char key, int x, int y)
 	case 'Q':
 		exit(0);
 		break;
-	default:		
+	default:
 		break;
 	}
 }
 
-void onKeyboardUP(unsigned char key, int x, int y){
+void onKeyboardUP(unsigned char key, int x, int y) {
 	switch (key)
 	{
 		// "a"が離された時
@@ -732,7 +303,7 @@ void onKeyboardUP(unsigned char key, int x, int y){
 		break;
 	default:
 		break;
-	
+
 	}
 }
 
@@ -744,8 +315,7 @@ void onKeyboardUP(unsigned char key, int x, int y){
 */
 void onMouseMotion(int x, int y)
 {
-	//player.centerX = x;
-	//player.centerY = kScreenHeight - y;
+
 }
 
 /**
@@ -756,8 +326,7 @@ void onMouseMotion(int x, int y)
 */
 void onPassiveMotion(int x, int y)
 {
-	//player.centerX = x;
-	//player.centerY = kScreenHeight - y;
+
 }
 
 /**
