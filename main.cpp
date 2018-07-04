@@ -13,7 +13,7 @@
 // ゲーム画面サイズの設定
 //
 //! スクリーン幅
-const int kScreenWidth = 300;
+const int kScreenWidth = 400;
 //! スクリーン高さ
 const int kScreenHeight = 600;
 
@@ -86,7 +86,7 @@ void setupTextures()
 
 	// TODO: 必要なテクスチャファイルをここでロード
 	// e.g.
-	loadTexture(0, "block.bmp");	//playerbox
+	loadTexture(0, "color.raw");	//playerbox
 	loadTexture(1, "char.raw");
 }
 
@@ -113,6 +113,72 @@ uint64_t getTimestampUS()
 	return absoluteUs;
 #endif
 }
+
+/**
+* @struct TrafficLines
+* @brief 車線クラス
+*/
+struct TrafficLines
+{
+	//! ブロックの中心X座標
+	int centerX;
+	//! ブロックの中心Y座標
+	int centerY;
+	//! ブロックの横幅/2
+	int width_2;
+	//! ブロックの高さ/2
+	int height_2;
+
+	TrafficLines()
+	{
+		centerX = 0;
+		centerY = 0;
+		width_2 = 5;
+		height_2 = 300;
+	}
+	void init()
+	{
+
+	}
+	/**
+	* @fn void TrafficLines::draw()
+	* @brief 描画メンバ関数
+	*/
+	void draw()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glColor3d(1.0, 1.0, 1.0);
+		//外側左車線
+		centerX = 95;
+		centerY = 300;
+		glBegin(GL_POLYGON);
+		glVertex2i(centerX - width_2, centerY - height_2);
+		glVertex2i(centerX - width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY - height_2);
+		glEnd();
+		//外側右車線
+		//外側左車線
+		centerX = 305;
+		centerY = 300;
+		glBegin(GL_POLYGON);
+		glVertex2i(centerX - width_2, centerY - height_2);
+		glVertex2i(centerX - width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY - height_2);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+	/**
+	* @fn void TrafficLines::update(double dt)
+	* @brief 状態更新メンバ関数
+	* @param [in] dt 時間差分（秒）
+	*/
+	void update(double dt)
+	{
+	}
+};
 
 
 /**
@@ -175,6 +241,8 @@ struct KeyboardState
 
 //! キーボードステートインスタンス
 KeyboardState keyboardState;
+//! 車線インスタンス
+TrafficLines trafficLines;
 
 /**
 * @fn void initializeGame()
@@ -233,6 +301,8 @@ void onDisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	// TODO: .draw
+	trafficLines.draw();
+
 	glutSwapBuffers();
 	glFlush();
 }
