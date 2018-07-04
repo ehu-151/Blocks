@@ -159,7 +159,6 @@ struct TrafficLines
 		glVertex2i(centerX + width_2, centerY - height_2);
 		glEnd();
 		//外側右車線
-		//外側左車線
 		centerX = 305;
 		centerY = 300;
 		glBegin(GL_POLYGON);
@@ -180,6 +179,62 @@ struct TrafficLines
 	}
 };
 
+/**
+* @struct DottedLines
+* @brief 破線クラス
+*/
+struct DottedLines
+{
+	//! ブロックの中心X座標
+	int centerX;
+	//! ブロックの中心Y座標
+	int centerY;
+	//! ブロックの横幅/2
+	int width_2;
+	//! ブロックの高さ/2
+	int height_2;
+	//! 速さ
+	double speed;
+
+	DottedLines()
+	{
+		centerX = 0;
+		centerY = 0;
+		width_2 = 5;
+		height_2 = 35;
+		speed = 100;
+	}
+	void init()
+	{
+
+	}
+	/**
+	* @fn void DottedLines::draw()
+	* @brief 描画メンバ関数
+	*/
+	void draw()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glColor3d(1.0, 1.0, 1.0);
+		//外側左車線
+		glBegin(GL_POLYGON);
+		glVertex2i(centerX - width_2, centerY - height_2);
+		glVertex2i(centerX - width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY - height_2);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+	/**
+	* @fn void DottedLines::update(double dt)
+	* @brief 状態更新メンバ関数
+	* @param [in] dt 時間差分（秒）
+	*/
+	void update(double dt)
+	{
+	}
+};
 
 /**
 * @struct KeyboardState
@@ -243,6 +298,10 @@ struct KeyboardState
 KeyboardState keyboardState;
 //! 車線インスタンス
 TrafficLines trafficLines;
+//! 破線の数
+const int kNumDottedLine = 10;
+//! 破線インスタンス
+DottedLines dottedLines[kNumDottedLine];
 
 /**
 * @fn void initializeGame()
@@ -251,6 +310,14 @@ TrafficLines trafficLines;
 void initializeGame()
 {
 	//initする
+	for (int h = 0; h <5; ++h)
+	{
+		for (int w = 0; w < 2; ++w)
+		{
+			dottedLines[h * 2 + w].centerX = w * 70 + (160+ dottedLines[h * 2 + w].width_2);
+			dottedLines[h * 2 + w].centerY = h * 140 + (0 + dottedLines[h * 2 + w].height_2);
+		}
+	}
 }
 
 /**
@@ -302,6 +369,10 @@ void onDisplay()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	// TODO: .draw
 	trafficLines.draw();
+	for (int i = 0; i < kNumDottedLine; i++)
+	{
+		dottedLines[i].draw();
+	}
 
 	glutSwapBuffers();
 	glFlush();
