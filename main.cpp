@@ -233,6 +233,11 @@ struct DottedLines
 	*/
 	void update(double dt)
 	{
+		centerY -= dt * speed;
+		if (centerY <= -35)
+		{
+			centerY = 600 + 65;
+		}
 	}
 };
 
@@ -431,6 +436,11 @@ bool isGameOvered()
 void update(double dt)
 {
 	//updateˆ—
+	//”jü
+	for (int i = 0; i < kNumDottedLine; i++)
+	{
+		dottedLines[i].update(dt);
+	}
 }
 
 /**
