@@ -319,6 +319,8 @@ struct Car
 	double width_2;
 	//! ブロックの高さ/2
 	double height_2;
+	// 横移動
+	double slide_speed;
 	
 
 	Car()
@@ -327,6 +329,7 @@ struct Car
 		centerY = 35;
 		width_2 = 10;
 		height_2 = 20;
+		slide_speed = 5;
 	}
 	void init()
 	{
@@ -491,6 +494,7 @@ bool isGameOvered()
 }
 // チェック処理
 
+
 /**
 * @fn void update(double dt)
 * @brief ゲーム状態更新
@@ -508,16 +512,19 @@ void update(double dt)
 	{
 		wall[i].update(dt);
 	}
-	double slide_speed = 5;
+	
 	// キーボード操作
 	if (keyboardState.is_a==true)
 	{
-		car.centerX -= slide_speed;
+		car.centerX -= car.slide_speed;
 	}
 	else if (keyboardState.is_d == true)
 	{
-		car.centerX += slide_speed;
+		car.centerX += car.slide_speed;
 	}
+
+
+	
 }
 
 /**
@@ -539,6 +546,8 @@ void onDisplay()
 		wall[i].draw();
 	}
 	car.draw();
+	glRasterPos2i(100, 100);
+	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 49);
 	glutSwapBuffers();
 	glFlush();
 }
