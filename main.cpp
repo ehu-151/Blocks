@@ -508,6 +508,16 @@ void update(double dt)
 	{
 		wall[i].update(dt);
 	}
+	double slide_speed = 5;
+	// キーボード操作
+	if (keyboardState.is_a==true)
+	{
+		car.centerX -= slide_speed;
+	}
+	else if (keyboardState.is_d == true)
+	{
+		car.centerX += slide_speed;
+	}
 }
 
 /**
