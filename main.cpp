@@ -237,6 +237,65 @@ struct DottedLines
 };
 
 /**
+* @struct Wall
+* @brief 壁クラス
+*/
+struct Wall
+{
+	//! ブロックの中心X座標
+	int centerX;
+	//! ブロックの中心Y座標
+	int centerY;
+	//! ブロックの横幅/2
+	int width_2;
+	//! ブロックの高さ/2
+	int height_2;
+	//! 速さ
+	double speed;
+	//! ブロックの配置
+	//int place[4][2]= { { 0,1 },{ 0,1 },{ 0,1 },{ 0,1 } };
+
+	Wall()
+	{
+		centerX = 0;
+		centerY = 0;
+		width_2 = 35;
+		height_2 = 5;
+		speed = 100;
+	}
+	void init()
+	{
+
+	}
+	/**
+	* @fn void Wall::draw()
+	* @brief 描画メンバ関数
+	*/
+	void draw()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glColor3d(1.0, 0.0, 0.0);
+		//外側左車線
+		glBegin(GL_POLYGON);
+		glVertex2i(centerX - width_2, centerY - height_2);
+		glVertex2i(centerX - width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY - height_2);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+	/**
+	* @fn void Wall::update(double dt)
+	* @brief 状態更新メンバ関数
+	* @param [in] dt 時間差分（秒）
+	*/
+	void update(double dt)
+	{
+	}
+};
+
+/**
 * @struct KeyboardState
 * @brief キーボードステートクラス
 */
@@ -302,6 +361,10 @@ TrafficLines trafficLines;
 const int kNumDottedLine = 10;
 //! 破線インスタンス
 DottedLines dottedLines[kNumDottedLine];
+//! 壁の最大数
+const int kNumWall = 6;
+//! 壁のインスタンス
+Wall wall[kNumWall];
 
 /**
 * @fn void initializeGame()
@@ -318,6 +381,17 @@ void initializeGame()
 			dottedLines[h * 2 + w].centerY = h * 140 + (0 + dottedLines[h * 2 + w].height_2);
 		}
 	}
+	int place[3][2] = { { 0,1 },{ 1,2 },{ 0,1 } };
+	//wall
+	for (int h = 0; h < 3; h++)
+	{
+		for (int w = 0; w < 2; w++)
+		{
+			wall[h * 2 + w].centerX = place[h][w] * 70 + (130);
+			wall[h * 2 + w].centerY = h * 210 + (140);
+		}
+	}
+
 }
 
 /**
@@ -372,6 +446,10 @@ void onDisplay()
 	for (int i = 0; i < kNumDottedLine; i++)
 	{
 		dottedLines[i].draw();
+	}
+	for (int i = 0; i < kNumWall; i++)
+	{
+		wall[i].draw();
 	}
 
 	glutSwapBuffers();
