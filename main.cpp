@@ -306,6 +306,62 @@ struct Wall
 };
 
 /**
+* @struct Car
+* @brief 車クラス
+*/
+struct Car
+{
+	//! ブロックの中心X座標
+	double centerX;
+	//! ブロックの中心Y座標
+	double centerY;
+	//! ブロックの横幅/2
+	double width_2;
+	//! ブロックの高さ/2
+	double height_2;
+	
+
+	Car()
+	{
+		centerX = 200;
+		centerY = 35;
+		width_2 = 10;
+		height_2 = 20;
+	}
+	void init()
+	{
+
+	}
+	/**
+	* @fn void Wall::draw()
+	* @brief 描画メンバ関数
+	*/
+	void draw()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glColor3d(0.0, 0.0, 1.0);
+		//外側左車線
+		glBegin(GL_POLYGON);
+		glVertex2i(centerX - width_2, centerY - height_2);
+		glVertex2i(centerX - width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY + height_2);
+		glVertex2i(centerX + width_2, centerY - height_2);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+	/**
+	* @fn void Wall::update(double dt)
+	* @brief 状態更新メンバ関数
+	* @param [in] dt 時間差分（秒）
+	*/
+	void update(double dt)
+	{
+		
+	}
+};
+
+/**
 * @struct KeyboardState
 * @brief キーボードステートクラス
 */
@@ -375,6 +431,8 @@ DottedLines dottedLines[kNumDottedLine];
 const int kNumWall = 6;
 //! 壁のインスタンス
 Wall wall[kNumWall];
+// 車のインスタンス
+Car car;
 
 /**
 * @fn void initializeGame()
@@ -470,7 +528,7 @@ void onDisplay()
 	{
 		wall[i].draw();
 	}
-
+	car.draw();
 	glutSwapBuffers();
 	glFlush();
 }
