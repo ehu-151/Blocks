@@ -186,13 +186,13 @@ struct TrafficLines
 struct DottedLines
 {
 	//! ブロックの中心X座標
-	int centerX;
+	double centerX;
 	//! ブロックの中心Y座標
-	int centerY;
+	double centerY;
 	//! ブロックの横幅/2
-	int width_2;
+	double width_2;
 	//! ブロックの高さ/2
-	int height_2;
+	double height_2;
 	//! 速さ
 	double speed;
 
@@ -248,13 +248,13 @@ struct DottedLines
 struct Wall
 {
 	//! ブロックの中心X座標
-	int centerX;
+	double centerX;
 	//! ブロックの中心Y座標
-	int centerY;
+	double centerY;
 	//! ブロックの横幅/2
-	int width_2;
+	double width_2;
 	//! ブロックの高さ/2
-	int height_2;
+	double height_2;
 	//! 速さ
 	double speed;
 	//! ブロックの配置
@@ -297,6 +297,11 @@ struct Wall
 	*/
 	void update(double dt)
 	{
+		centerY -= dt * speed;
+		if (centerY <= -5)
+		{
+			centerY = 600 + 25;
+		}
 	}
 };
 
@@ -393,7 +398,7 @@ void initializeGame()
 		for (int w = 0; w < 2; w++)
 		{
 			wall[h * 2 + w].centerX = place[h][w] * 70 + (130);
-			wall[h * 2 + w].centerY = h * 210 + (140);
+			wall[h * 2 + w].centerY = h * 210 + (210);
 		}
 	}
 
@@ -440,6 +445,10 @@ void update(double dt)
 	for (int i = 0; i < kNumDottedLine; i++)
 	{
 		dottedLines[i].update(dt);
+	}
+	for (int i = 0; i < kNumWall; i++)
+	{
+		wall[i].update(dt);
 	}
 }
 
