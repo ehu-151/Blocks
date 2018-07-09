@@ -326,7 +326,7 @@ struct Car
 	Car()
 	{
 		centerX = 200;
-		centerY = 35;
+		centerY = 35 + 210;
 		width_2 = 10;
 		height_2 = 20;
 		slide_speed = 5;
@@ -493,7 +493,40 @@ bool isGameOvered()
 	return false;
 }
 // チェック処理
+bool checkWall(Car& car, Wall& wall) {
+	//車と壁の衝突チェック
+	// 車の上辺の衝突条件
+	if (car.centerY+car.height_2>=wall.centerY-wall.height_2 &&car.centerY + car.height_2 <= wall.centerY + wall.height_2)
+	{
+		// 車の下辺が壁の枠の中に入ったら衝突
+		
+			//車の左頂点が衝突しているか  || 車の右頂点が衝突しているか
+			if ((car.centerX - car.width_2) >= (wall.centerX - wall.width_2) && (car.centerX - car.width_2) <= (wall.centerX + wall.width_2) ||
+				(car.centerX + car.width_2) >= (wall.centerX - wall.width_2) && (car.centerX + car.width_2) <= (wall.centerX + wall.width_2))
+			{
+				car.centerY = wall.centerY - wall.height_2 - car.height_2;
+				return true;
 
+			}
+		
+		
+	}
+	return false;
+}
+
+// 文字表示関数
+void displayChar(int x, int y, const char *str) {
+	for (int i = 0; i < sizeof(str); i++)
+	{
+		glColor3d(1.0, 1.0, 1.0);
+		glRasterPos2i(x + (i * 10), y);
+		int chara = (unsigned char)str[i];
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, chara);
+	}
+}
+
+
+int time_f = 0;
 
 /**
 * @fn void update(double dt)
@@ -511,6 +544,7 @@ void update(double dt)
 	for (int i = 0; i < kNumWall; i++)
 	{
 		wall[i].update(dt);
+		checkWall(car,wall[i]);
 	}
 	
 	// キーボード操作
@@ -523,17 +557,22 @@ void update(double dt)
 		car.centerX += car.slide_speed;
 	}
 
+	if (time_f == 100)
+	{
+		displayChar(100, 100, "kido");
+		time_f = 0;
+	}
+	else
+	{
+	
+		time_f = 1 + time_f;
+	}
 
 	
-}
-// 文字表示関数
-void displayChar(int x, int y, const char *str) {
-	for (int i = 0; i < sizeof(str); i++)
-	{
-		glRasterPos2i(x + (i * 10), y);
-		int chara = (unsigned char)str[i];
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, chara);
-	}
+	glutSwapBuffers();
+	glFlush();
+
+	
 }
 
 /**
@@ -555,7 +594,6 @@ void onDisplay()
 		wall[i].draw();
 	}
 	car.draw();
-	displayChar(100,100,"kido");
 
 	glutSwapBuffers();
 	glFlush();
