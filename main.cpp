@@ -526,6 +526,15 @@ void update(double dt)
 
 	
 }
+// •¶š•\¦ŠÖ”
+void displayChar(int x, int y, const char *str) {
+	for (int i = 0; i < sizeof(str); i++)
+	{
+		glRasterPos2i(x + (i * 10), y);
+		int chara = (unsigned char)str[i];
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, chara);
+	}
+}
 
 /**
 * @fn void onDisplay()
@@ -546,11 +555,13 @@ void onDisplay()
 		wall[i].draw();
 	}
 	car.draw();
-	glRasterPos2i(100, 100);
-	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 49);
+	displayChar(100,100,"kido");
+
 	glutSwapBuffers();
 	glFlush();
 }
+
+
 
 /**
 * @fn void onKeyboard(unsigned char key, int x, int y)
