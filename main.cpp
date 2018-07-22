@@ -149,18 +149,7 @@ struct TrafficLines
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glColor3d(1.0, 1.0, 1.0);
-		//外側左車線
-		centerX = 95;
-		centerY = 300;
-		glBegin(GL_POLYGON);
-		glVertex2i(centerX - width_2, centerY - height_2);
-		glVertex2i(centerX - width_2, centerY + height_2);
-		glVertex2i(centerX + width_2, centerY + height_2);
-		glVertex2i(centerX + width_2, centerY - height_2);
-		glEnd();
-		//外側右車線
-		centerX = 305;
-		centerY = 300;
+		
 		glBegin(GL_POLYGON);
 		glVertex2i(centerX - width_2, centerY - height_2);
 		glVertex2i(centerX - width_2, centerY + height_2);
@@ -217,7 +206,7 @@ struct DottedLines
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glColor3d(1.0, 1.0, 1.0);
-		//外側左車線
+
 		glBegin(GL_POLYGON);
 		glVertex2i(centerX - width_2, centerY - height_2);
 		glVertex2i(centerX - width_2, centerY + height_2);
@@ -281,7 +270,7 @@ struct Wall
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glColor3d(1.0, 0.0, 0.0);
-		//外側左車線
+
 		glBegin(GL_POLYGON);
 		glVertex2i(centerX - width_2, centerY - height_2);
 		glVertex2i(centerX - width_2, centerY + height_2);
@@ -424,8 +413,10 @@ struct KeyboardState
 
 //! キーボードステートインスタンス
 KeyboardState keyboardState;
+//! 車線の数
+const int kNumTrafficLine = 2;
 //! 車線インスタンス
-TrafficLines trafficLines;
+TrafficLines trafficLines[kNumTrafficLine];
 //! 破線の数
 const int kNumDottedLine = 10;
 //! 破線インスタンス
@@ -462,7 +453,11 @@ void initializeGame()
 			wall[h * 2 + w].centerY = h * 210 + (210);
 		}
 	}
-
+	// trafficLines
+	trafficLines[0].centerX = 95;
+	trafficLines[0].centerY = 300;
+	trafficLines[1].centerX = 305;
+	trafficLines[1].centerY = 300;
 }
 
 /**
@@ -513,19 +508,13 @@ bool checkWall(Car& car, Wall& wall) {
 	}
 	return false;
 }
-// 右からぶつかる時の衝突判定、衝突したらtrue
-bool checkLeftWall(Car& car, Wall& wall) {
-	if (car.centerY + car.height_2 >= wall.centerY - wall.height_2 &&car.centerY + car.height_2 <= wall.centerY + wall.height_2 ||
-		car.centerY - car.height_2 >= wall.centerY - wall.height_2 &&car.centerY - car.height_2 <= wall.centerY + wall.height_2)
-	{
-		// 車の下辺が壁の枠の中に入ったら衝突
 
-		//車の左頂点が衝突しているか  || 車の右頂点が衝突しているか
-		if ((car.centerX - car.width_2) >= (wall.centerX - wall.width_2) && (car.centerX - car.width_2) <= (wall.centerX + wall.width_2) ||
-			(car.centerX + car.width_2) >= (wall.centerX - wall.width_2) && (car.centerX + car.width_2) <= (wall.centerX + wall.width_2))
-		{
-			return true;
-		}
+// 車線(路側帯)が横からの衝突判定、衝突したらtrue
+bool checkTrafficLineBySide(Car& car, TrafficLines& line) {
+	// 横からぶつかったらtrue
+	if (car.centerX + car.width_2 >= line.centerX - line.width_2 && car.centerX - car.width_2 <= line.centerX + line.width_2)
+	{
+		return true;
 	}
 	return false;
 }
@@ -578,7 +567,8 @@ void update(double dt)
 	
 	// キーボード操作
 	if (keyboardState.is_a==true)
-	{	
+	{
+		// Wallの衝突判定
 		bool isCheckWall = false;
 		for (int i = 0; i < kNumWall; i++)
 		{
@@ -591,6 +581,11 @@ void update(double dt)
 				//false:衝突していない
 			}
 		}
+		// TrafficLineの衝突判定
+		for (int i = 0; i < 2; i++)
+		{
+
+		}
 		if (isCheckWall == false)
 		{
 			car.centerX -= car.slide_speed;
@@ -598,6 +593,7 @@ void update(double dt)
 	}
 	else if (keyboardState.is_d == true)
 	{
+		// Wallの衝突判定
 		bool isCheckWall = false;
 		for (int i = 0; i < kNumWall; i++)
 		{
@@ -643,7 +639,8 @@ void onDisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	// TODO: .draw
-	trafficLines.draw();
+	trafficLines[0].draw();
+	trafficLines[1].draw();
 	for (int i = 0; i < kNumDottedLine; i++)
 	{
 		dottedLines[i].draw();
