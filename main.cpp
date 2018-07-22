@@ -563,6 +563,10 @@ bool isMiss()
 }
 bool isGameOvered()
 {
+	if (car.centerY + car.height_2 <= 0) {
+		return true;
+	}
+
 	return false;
 }
 // チェック処理
@@ -638,6 +642,13 @@ bool checkWallByLeft(Car& car, Wall& wall) {
 */
 void update(double dt)
 {
+	// GameOverかどうか
+	if (isGameOvered())
+	{
+		printf("Game Over...\n");
+		exit(0);
+	}
+
 	//update処理
 	//破線
 	for (int i = 0; i < kNumDottedLine; i++)
