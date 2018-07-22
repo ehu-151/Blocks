@@ -513,6 +513,35 @@ bool checkWall(Car& car, Wall& wall) {
 	}
 	return false;
 }
+// 右からぶつかる時の衝突判定、衝突したらtrue
+bool checkLeftWall(Car& car, Wall& wall) {
+	if (car.centerY + car.height_2 >= wall.centerY - wall.height_2 &&car.centerY + car.height_2 <= wall.centerY + wall.height_2 ||
+		car.centerY - car.height_2 >= wall.centerY - wall.height_2 &&car.centerY - car.height_2 <= wall.centerY + wall.height_2)
+	{
+		// 車の下辺が壁の枠の中に入ったら衝突
+
+		//車の左頂点が衝突しているか  || 車の右頂点が衝突しているか
+		if ((car.centerX - car.width_2) >= (wall.centerX - wall.width_2) && (car.centerX - car.width_2) <= (wall.centerX + wall.width_2) ||
+			(car.centerX + car.width_2) >= (wall.centerX - wall.width_2) && (car.centerX + car.width_2) <= (wall.centerX + wall.width_2))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+// 車が壁に横からぶつかる時、衝突したらtrue
+bool checkWallBySide(Car& car, Wall& wall) {
+	// 壁が隣にあるとき
+	if (car.centerY + car.height_2 > wall.centerY - wall.height_2 && car.centerY - car.height_2 < wall.centerY + wall.height_2) {
+		// 横からぶつかった時
+		if (car.centerX + car.width_2 >= wall.centerX - wall.width_2 && car.centerX - car.width_2 <= wall.centerX + wall.width_2) {
+			return true;
+		}
+		
+	}
+	return false;
+}
 
 // 文字表示関数
 void displayChar(int x, int y, const char *str) {
@@ -549,12 +578,42 @@ void update(double dt)
 	
 	// キーボード操作
 	if (keyboardState.is_a==true)
-	{
-		car.centerX -= car.slide_speed;
+	{	
+		bool isCheckWall = false;
+		for (int i = 0; i < kNumWall; i++)
+		{
+			if (checkWallBySide(car, wall[i])) {
+				//true:衝突
+				isCheckWall = true;
+				break;
+			}
+			else {
+				//false:衝突していない
+			}
+		}
+		if (isCheckWall == false)
+		{
+			car.centerX -= car.slide_speed;
+		}
 	}
 	else if (keyboardState.is_d == true)
 	{
-		car.centerX += car.slide_speed;
+		bool isCheckWall = false;
+		for (int i = 0; i < kNumWall; i++)
+		{
+			if (checkWallBySide(car, wall[i])) {
+				//true:衝突
+				isCheckWall = true;
+				break;
+			}
+			else {
+				//false:衝突していない
+			}
+		}
+		if (isCheckWall == false)
+		{
+			car.centerX += car.slide_speed;
+		}
 	}
 
 	if (time_f == 100)
