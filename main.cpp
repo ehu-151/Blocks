@@ -426,13 +426,25 @@ struct DrawInt
 	char str[50];
 	//! score用数値
 	int score;
+	//! 更新するかしないか
+	bool needLoad;
+	//! 文字の色
+	double color[3] = { 1.0, 1.0, 1.0 };
 
 	DrawInt()
 	{
 		firstX = 0;
 		firstY = 0;
 		score = 0;
+		needLoad = true;
 	}
+	// Colorを変える
+	void setColor(double r, double g, double b) {
+		color[0] = r;
+		color[1] = g;
+		color[2] = b;
+	}
+
 	void initString(char* mozi)
 	{
 		sprintf(str, "%s", mozi);
@@ -445,7 +457,7 @@ struct DrawInt
 	{
 		for (int i = 0; i < sizeof(str); i++)
 		{
-			glColor3d(1.0, 1.0, 1.0);
+			glColor3d(color[0], color[1], color[2]);
 			glRasterPos2i(firstX + (i * 10), firstY);
 			int chara = (unsigned char)str[i];
 			glutBitmapCharacter(GLUT_BITMAP_8_BY_13, chara);
@@ -458,8 +470,11 @@ struct DrawInt
 	*/
 	void update(double dt)
 	{
-		score = score + 1;
-		sprintf(str, "%d", score);
+		if (needLoad)
+		{
+			score = score + 1;
+			sprintf(str, "%d", score);
+		}
 	}
 };
 
@@ -646,7 +661,9 @@ void update(double dt)
 	if (isGameOvered())
 	{
 		printf("Game Over...\n");
-		exit(0);
+		// Scoreの更新を止める
+		drawInt[0].needLoad = false;
+		drawInt[0].setColor(1.0, 0, 0);
 	}
 
 	//update処理
