@@ -9,6 +9,7 @@
 #include <GLUT/GLUT.h>
 #endif
 #include <time.h>
+#include <string>
 
 // ゲーム画面サイズの設定
 //
@@ -516,10 +517,25 @@ void initializeGame()
 	trafficLines[1].centerY = 300;
 
 	//drawInt
+	// Scoreと表示
+	drawString[0].firstX = 20;
+	drawString[0].firstY = 500;
+	drawString[0].initString("Score");
+	// Scoreの数値の表示
 	drawInt[0].firstX = 20;
-	drawInt[0].firstY = 500;
+	drawInt[0].firstY = 470;
 	drawInt[0].initString("0");
-
+	// Speedと表示
+	drawString[1].firstX = 20;
+	drawString[1].firstY = 400;
+	drawString[1].initString("Speed");
+	// Speedの数値の表示
+	drawInt[1].firstX = 20;
+	drawInt[1].firstY = 370;
+	std::string str;
+	char speedStr[30];
+	snprintf(speedStr, 12, "%.0lf", wall[0].speed);
+	drawInt[1].initString(speedStr);
 }
 
 /**
@@ -615,20 +631,6 @@ bool checkWallByLeft(Car& car, Wall& wall) {
 	return false;
 }
 
-// 文字表示関数
-void displayChar(int x, int y, const char *str) {
-	for (int i = 0; i < sizeof(str); i++)
-	{
-		glColor3d(1.0, 1.0, 1.0);
-		glRasterPos2i(x + (i * 10), y);
-		int chara = (unsigned char)str[i];
-		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, chara);
-	}
-}
-
-
-int time_f = 0;
-
 /**
 * @fn void update(double dt)
 * @brief ゲーム状態更新
@@ -642,6 +644,7 @@ void update(double dt)
 	{
 		dottedLines[i].update(dt);
 	}
+	//wall
 	for (int i = 0; i < kNumWall; i++)
 	{
 		wall[i].update(dt);
@@ -715,9 +718,28 @@ void update(double dt)
 		printf("%d\n", isCollision);
 	}
 
+	// スコア100ごとにSpeedUp:上限250
+	if (drawInt[0].score % 10 == 0 && drawInt[0].score != 0 && wall[0].speed < 250)
+	{
+		//破線
+		for (int i = 0; i < kNumDottedLine; i++)
+		{
+			dottedLines[i].speed += 10;
+		}
+		//wall
+		for (int i = 0; i < kNumWall; i++)
+		{
+			wall[i].speed += 10;
+		}
+		
+		//壁に埋まってしまうのでなし
+		//car.slide_speed += 5;
+	}
 	drawInt[0].update(dt);
+	char speedStr[30];
+	snprintf(speedStr, 12, "%.0lf", wall[0].speed);
+	drawInt[1].initString(speedStr);
 
-	
 	glutSwapBuffers();
 	glFlush();
 
@@ -744,7 +766,11 @@ void onDisplay()
 		wall[i].draw();
 	}
 	car.draw();
-	drawInt[0].draw();
+	drawString[0].draw();
+	drawInt[0].draw();	
+	drawString[1].draw();
+	drawInt[1].draw();
+
 	glutSwapBuffers();
 	glFlush();
 }
