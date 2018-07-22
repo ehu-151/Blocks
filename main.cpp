@@ -411,6 +411,59 @@ struct KeyboardState
 	}
 };
 
+/**
+* @struct DrawInt
+* @brief 数値描画クラス
+*/
+struct DrawInt
+{
+	//! 文字の開始X軸位置
+	int firstX;
+	//! 文字の開始Y軸位置
+	int firstY;
+	//! 描画文字
+	char str[50];
+	//! score用数値
+	int score;
+
+	DrawInt()
+	{
+		firstX = 0;
+		firstY = 0;
+		score = 0;
+	}
+	void initString(char* mozi)
+	{
+		sprintf(str, "%s", mozi);
+	}
+	/**
+	* @fn void Wall::draw()
+	* @brief 描画メンバ関数
+	*/
+	void draw()
+	{
+		for (int i = 0; i < sizeof(str); i++)
+		{
+			glColor3d(1.0, 1.0, 1.0);
+			glRasterPos2i(firstX + (i * 10), firstY);
+			int chara = (unsigned char)str[i];
+			glutBitmapCharacter(GLUT_BITMAP_8_BY_13, chara);
+		}
+	}
+	/**
+	* @fn void DrawInt::update(double dt)
+	* @brief 状態更新メンバ関数
+	* @param [in] dt 時間差分（秒）
+	*/
+	void update(double dt)
+	{
+		score = score + 1;
+		sprintf(str, "%d", score);
+	}
+};
+
+
+
 //! キーボードステートインスタンス
 KeyboardState keyboardState;
 //! 車線の数
@@ -427,6 +480,9 @@ const int kNumWall = 6;
 Wall wall[kNumWall];
 // 車のインスタンス
 Car car;
+// 数値描画インスタンス
+DrawInt drawInt[2];
+DrawInt drawString[2];
 
 /**
 * @fn void initializeGame()
@@ -458,6 +514,12 @@ void initializeGame()
 	trafficLines[0].centerY = 300;
 	trafficLines[1].centerX = 305;
 	trafficLines[1].centerY = 300;
+
+	//drawInt
+	drawInt[0].firstX = 20;
+	drawInt[0].firstY = 500;
+	drawInt[0].initString("0");
+
 }
 
 /**
@@ -653,16 +715,7 @@ void update(double dt)
 		printf("%d\n", isCollision);
 	}
 
-	if (time_f == 100)
-	{
-		displayChar(100, 100, "kido");
-		time_f = 0;
-	}
-	else
-	{
-	
-		time_f = 1 + time_f;
-	}
+	drawInt[0].update(dt);
 
 	
 	glutSwapBuffers();
@@ -691,7 +744,7 @@ void onDisplay()
 		wall[i].draw();
 	}
 	car.draw();
-
+	drawInt[0].draw();
 	glutSwapBuffers();
 	glFlush();
 }
