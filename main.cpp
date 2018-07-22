@@ -777,7 +777,7 @@ void update(double dt)
 	}
 
 	// ÉXÉRÉA100Ç≤Ç∆Ç…SpeedUp:è„å¿250
-	if (drawInt[0].score % 10 == 0 && drawInt[0].score != 0 && wall[0].speed < 250)
+	if (drawInt[0].score % 100 == 0 && drawInt[0].score != 0 && wall[0].speed < 250)
 	{
 		//îjê¸
 		for (int i = 0; i < kNumDottedLine; i++)
