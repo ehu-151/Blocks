@@ -509,25 +509,46 @@ bool checkWall(Car& car, Wall& wall) {
 	return false;
 }
 
-// 車線(路側帯)が横からの衝突判定、衝突したらtrue
-bool checkTrafficLineBySide(Car& car, TrafficLines& line) {
+// 車線(路側帯)が右からの衝突判定、衝突したらtrue
+bool checkTrafficLineByRight(Car& car, TrafficLines& line) {
 	// 横からぶつかったらtrue
-	if (car.centerX + car.width_2 >= line.centerX - line.width_2 && car.centerX - car.width_2 <= line.centerX + line.width_2)
+	if (car.centerX + car.width_2 >= line.centerX - line.width_2 && car.centerX - car.width_2 < line.centerX + line.width_2)
+	{
+		return true;
+	}
+	return false;
+}
+// 車線(路側帯)が左からの衝突判定、衝突したらtrue
+bool checkTrafficLineByLeft(Car& car, TrafficLines& line) {
+	// 横からぶつかったらtrue
+	if (car.centerX + car.width_2 > line.centerX - line.width_2  && car.centerX - car.width_2 <= line.centerX + line.width_2)
 	{
 		return true;
 	}
 	return false;
 }
 
-// 車が壁に横からぶつかる時、衝突したらtrue
-bool checkWallBySide(Car& car, Wall& wall) {
+// 車が壁に右からぶつかる時、衝突したらtrue
+bool checkWallByRight(Car& car, Wall& wall) {
 	// 壁が隣にあるとき
 	if (car.centerY + car.height_2 > wall.centerY - wall.height_2 && car.centerY - car.height_2 < wall.centerY + wall.height_2) {
 		// 横からぶつかった時
-		if (car.centerX + car.width_2 >= wall.centerX - wall.width_2 && car.centerX - car.width_2 <= wall.centerX + wall.width_2) {
+		if (car.centerX + car.width_2 >= wall.centerX - wall.width_2 && car.centerX - car.width_2 < wall.centerX + wall.width_2) {
 			return true;
 		}
 		
+	}
+	return false;
+}
+// 車が壁に左からぶつかる時、衝突したらtrue
+bool checkWallByLeft(Car& car, Wall& wall) {
+	// 壁が隣にあるとき
+	if (car.centerY + car.height_2 > wall.centerY - wall.height_2 && car.centerY - car.height_2 < wall.centerY + wall.height_2) {
+		// 横からぶつかった時
+		if (car.centerX + car.width_2 > wall.centerX - wall.width_2 && car.centerX - car.width_2 <= wall.centerX + wall.width_2) {
+			return true;
+		}
+
 	}
 	return false;
 }
@@ -566,15 +587,16 @@ void update(double dt)
 	}
 	
 	// キーボード操作
+	// aの時
 	if (keyboardState.is_a==true)
 	{
 		// Wallの衝突判定
-		bool isCheckWall = false;
+		bool isCollision = false;
 		for (int i = 0; i < kNumWall; i++)
 		{
-			if (checkWallBySide(car, wall[i])) {
+			if (checkWallByLeft(car, wall[i])) {
 				//true:衝突
-				isCheckWall = true;
+				isCollision = true;
 				break;
 			}
 			else {
@@ -582,34 +604,53 @@ void update(double dt)
 			}
 		}
 		// TrafficLineの衝突判定
-		for (int i = 0; i < 2; i++)
-		{
-
+		for (int i = 0; i < kNumTrafficLine; i++)
+		{	
+			if (checkTrafficLineByLeft(car, trafficLines[i]))
+			{
+				//trueなので衝突、isCollisionをtrueにする
+				isCollision = true;
+				break;
+			}
 		}
-		if (isCheckWall == false)
+		if (isCollision == false)
 		{
 			car.centerX -= car.slide_speed;
 		}
+		printf("%d\n", isCollision);
 	}
+	// dの時
 	else if (keyboardState.is_d == true)
 	{
 		// Wallの衝突判定
-		bool isCheckWall = false;
+		bool isCollision = false;
 		for (int i = 0; i < kNumWall; i++)
 		{
-			if (checkWallBySide(car, wall[i])) {
+			if (checkWallByRight(car, wall[i])) {
 				//true:衝突
-				isCheckWall = true;
+				isCollision = true;
 				break;
 			}
 			else {
 				//false:衝突していない
 			}
 		}
-		if (isCheckWall == false)
+		// TrafficLineの衝突判定
+		for (int i = 0; i < kNumTrafficLine; i++)
+		{
+			if (checkTrafficLineByRight(car, trafficLines[i]))
+			{
+				//trueなので衝突、isCollisionをtrueにする
+				isCollision = true;
+				break;
+			}
+		}
+
+		if (isCollision == false)
 		{
 			car.centerX += car.slide_speed;
 		}
+		printf("%d\n", isCollision);
 	}
 
 	if (time_f == 100)
