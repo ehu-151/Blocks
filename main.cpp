@@ -29,6 +29,10 @@ GLubyte textureImage[kNumTextures][kTextureHeight][kTextureWidth][4]; //最後の"4
 //! テクスチャ識別子
 GLuint textureID[kNumTextures];
 
+
+//! ブロックの配置
+int place[4][2] = { { 0,1 },{ 0,1 },{ 0,1 },{ 0,1 } };
+
 /**
 * @fn bool loadTexture(int index, const char* filename)
 * @brief テクスチャ画像ファイルのロード
@@ -247,9 +251,7 @@ struct Wall
 	double height_2;
 	//! 速さ
 	double speed;
-	//! ブロックの配置
-	//int place[4][2]= { { 0,1 },{ 0,1 },{ 0,1 },{ 0,1 } };
-
+	
 	Wall()
 	{
 		centerX = 0;
@@ -285,11 +287,37 @@ struct Wall
 	* @brief 状態更新メンバ関数
 	* @param [in] dt 時間差分（秒）
 	*/
-	void update(double dt)
+	double Uniform(void) {
+		static int x = 10;
+		int a = 1103515245, b = 12345, c = 2147483647;
+		x = (a*x + b)&c;
+
+		return ((double)x + 1.0) / ((double)c + 2.0);
+	}
+	void update(double dt,int i)
 	{
 		centerY -= dt * speed;
-		if (centerY <= -5)
+		// Wallのループ
+		if (centerY+height_2 <= 0)
 		{
+			if (i == 0 || i == 2 || i == 4) {
+				int intRand = (int)(rand()*(double)3 / (1.0 + RAND_MAX));;
+				
+				printf("%d", intRand);
+				if (intRand == 0) {
+					place[i / 2][0] = 1;
+					place[i / 2][1] = 2;
+				}
+				else if (intRand == 1) {
+					place[i / 2][0] = 2;
+					place[i / 2][1] = 0;
+				}
+				else if (intRand == 2) {
+					place[i / 2][0] = 0;
+					place[i / 2][1] = 1;
+				}
+			}
+			centerX = place[i/2][i%2] * 70 + (130);
 			centerY = 600 + 25;
 		}
 	}
@@ -500,6 +528,7 @@ Car car;
 DrawInt drawInt[2];
 DrawInt drawString[2];
 
+
 /**
 * @fn void initializeGame()
 * @brief ゲーム環境の初期化
@@ -515,7 +544,7 @@ void initializeGame()
 			dottedLines[h * 2 + w].centerY = h * 140 + (0 + dottedLines[h * 2 + w].height_2);
 		}
 	}
-	int place[3][2] = { { 0,1 },{ 1,2 },{ 0,1 } };
+	
 	//wall
 	for (int h = 0; h < 3; h++)
 	{
@@ -672,10 +701,13 @@ void update(double dt)
 	{
 		dottedLines[i].update(dt);
 	}
+	
 	//wall
 	for (int i = 0; i < kNumWall; i++)
 	{
-		wall[i].update(dt);
+	
+		
+		wall[i].update(dt,i);
 		checkWall(car,wall[i]);
 	}
 	
@@ -710,7 +742,6 @@ void update(double dt)
 		{
 			car.centerX -= car.slide_speed;
 		}
-		printf("%d\n", isCollision);
 	}
 	// dの時
 	else if (keyboardState.is_d == true)
@@ -743,7 +774,6 @@ void update(double dt)
 		{
 			car.centerX += car.slide_speed;
 		}
-		printf("%d\n", isCollision);
 	}
 
 	// スコア100ごとにSpeedUp:上限250
