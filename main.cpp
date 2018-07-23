@@ -32,6 +32,8 @@ GLuint textureID[kNumTextures];
 
 //! ブロックの配置
 int place[4][2] = { { 0,1 },{ 0,1 },{ 0,1 },{ 0,1 } };
+//! 全体のスピード
+double tempSpeed = 100;
 
 /**
 * @fn bool loadTexture(int index, const char* filename)
@@ -196,7 +198,7 @@ struct DottedLines
 		centerY = 0;
 		width_2 = 5;
 		height_2 = 35;
-		speed = 100;
+		speed = tempSpeed;
 	}
 	void init()
 	{
@@ -258,7 +260,7 @@ struct Wall
 		centerY = 0;
 		width_2 = 35;
 		height_2 = 5;
-		speed = 100;
+		speed = tempSpeed;
 	}
 	void init()
 	{
@@ -775,9 +777,10 @@ void update(double dt)
 			car.centerX += car.slide_speed;
 		}
 	}
+	
 
 	// スコア100ごとにSpeedUp:上限250
-	if (drawInt[0].score % 100 == 0 && drawInt[0].score != 0 && wall[0].speed < 250)
+	if (drawInt[0].score % 100 == 0 && drawInt[0].score != 0 && wall[0].speed < 250 && wall[0].speed!=50)
 	{
 		//破線
 		for (int i = 0; i < kNumDottedLine; i++)
@@ -789,13 +792,47 @@ void update(double dt)
 		{
 			wall[i].speed += 10;
 		}
+		tempSpeed += 10;
 		
 		//壁に埋まってしまうのでなし
 		//car.slide_speed += 5;
 	}
+	// スペースを押すとスロー
+	if (keyboardState.is_space == true)
+	{
+		if (50 != wall[0].speed)
+		{
+			tempSpeed = wall[0].speed;
+			// スローにする
+			//破線
+			for (int i = 0; i < kNumDottedLine; i++)
+			{
+				dottedLines[i].speed = 50;
+			}
+			//wall
+			for (int i = 0; i < kNumWall; i++)
+			{
+				wall[i].speed = 50;
+			}
+		}
+	}
+	else
+	{
+		//もとに戻す
+		//破線
+		for (int i = 0; i < kNumDottedLine; i++)
+		{
+			dottedLines[i].speed = tempSpeed;
+		}
+		//wall
+		for (int i = 0; i < kNumWall; i++)
+		{
+			wall[i].speed = tempSpeed;
+		}
+	}
 	drawInt[0].update(dt);
 	char speedStr[30];
-	snprintf(speedStr, 12, "%.0lf", wall[0].speed);
+	snprintf(speedStr, 12, "%.0lf", tempSpeed);
 	drawInt[1].initString(speedStr);
 
 	glutSwapBuffers();
