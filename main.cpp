@@ -508,6 +508,64 @@ struct DrawInt
 	}
 };
 
+/**
+* @struct SlowWall
+* @brief スロー壁クラス
+*/
+struct SlowWall
+{
+	//! ブロックの初めの位置
+	double centerX;
+	//! ブロックの初めの位置
+	double centerY;
+	//! ブロックの横幅/2
+	double width_2;
+	//! ブロックの下に伸びる高さ
+	double height;
+	//! 透明度
+	double al;
+
+	SlowWall()
+	{
+		centerX = 200;
+		centerY = 600;
+		width_2 = 105;
+		height = 0;
+		al = 1.0;
+	}
+	void init()
+	{
+
+	}
+	/**
+	* @fn void SlowWall::draw()
+	* @brief 描画メンバ関数
+	*/
+	void draw()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glColor4d(0.2, 0.2, 0.2, al);
+		//外側左車線
+		glBegin(GL_POLYGON);
+		glVertex2i(centerX - width_2, centerY);
+		glVertex2i(centerX - width_2, centerY - height);
+		glVertex2i(centerX + width_2, centerY - height);
+		glVertex2i(centerX + width_2, centerY);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+	/**
+	* @fn void SlowWall::update(double dt)
+	* @brief 状態更新メンバ関数
+	* @param [in] dt 時間差分（秒）
+	*/
+	void update(double dt)
+	{
+		height += 1;
+	}
+};
+
 
 
 //! キーボードステートインスタンス
@@ -529,6 +587,8 @@ Car car;
 // 数値描画インスタンス
 DrawInt drawInt[2];
 DrawInt drawString[2];
+//! スロー時の壁のインスタンス
+SlowWall slowWall;
 
 
 /**
@@ -582,6 +642,7 @@ void initializeGame()
 	char speedStr[30];
 	snprintf(speedStr, 12, "%.0lf", wall[0].speed);
 	drawInt[1].initString(speedStr);
+
 }
 
 /**
@@ -815,6 +876,8 @@ void update(double dt)
 				wall[i].speed = 50;
 			}
 		}
+		// スローを使うと、画面が狭まる
+		slowWall.update(dt);
 	}
 	else
 	{
@@ -865,6 +928,8 @@ void onDisplay()
 	drawInt[0].draw();	
 	drawString[1].draw();
 	drawInt[1].draw();
+	//SlowWall
+	slowWall.draw();
 
 	glutSwapBuffers();
 	glFlush();
